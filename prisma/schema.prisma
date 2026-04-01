@@ -14,28 +14,25 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  email     String    @unique
-  password  String
-  clients   Client[]
-  invoices  Invoice[]
+  id           String        @id @default(cuid())
+  email        String        @unique
+  password     String
+  role         String        @default("VIEWER")
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  transactions Transaction[]
 }
 
-model Client {
-  id       String    @id @default(cuid())
-  name     String
-  user     User      @relation(fields: [userId], references: [id])
-  userId   String
-  invoices Invoice[]
-}
-
-model Invoice {
+model Transaction {
   id        String   @id @default(cuid())
-  amount    Int
-  status    String   @default("DRAFT") // e.g., DRAFT, SENT, PAID
-  user      User     @relation(fields: [userId], references: [id])
+  amount    Float
+  type      String
+  category  String
+  date      DateTime
+  notes     String?
+  isDeleted Boolean  @default(false)
   userId    String
-  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  clientId  String
+  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
