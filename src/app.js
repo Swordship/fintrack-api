@@ -4,8 +4,6 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 require('dotenv').config();
 const authRoutes = require('./routes/authRoute.js');
-const clientRoutes = require('./routes/clientRoute.js');
-const invoiceRoutes = require('./routes/invoiceRoute.js');
 const { errorhandeler } = require('./middleware/errorHandler.js');
 const app = express();
 
@@ -24,7 +22,5 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/auth' ,authRoutes);
-app.use('/clients', clientRoutes);
-app.use('/invoices',invoiceRoutes);
 app.use(errorhandeler);
 module.exports = app;
