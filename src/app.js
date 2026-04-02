@@ -29,5 +29,7 @@ app.get('/test-admin', authMiddleware, requireRole(['ADMIN']), (req, res) => {
 app.use('/auth' ,authRoutes);
 const userRoutes = require('./routes/userRoute');
 app.use('/users', userRoutes);
+const transactionRoutes = require('./routes/transactionRoute');
+app.use('/transactions', transactionRoutes);
 app.use(errorhandeler);
 module.exports = app;
