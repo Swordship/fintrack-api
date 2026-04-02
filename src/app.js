@@ -20,7 +20,12 @@ app.get('/health', (req, res) => {
         environment: process.env.NODE_ENV
     });
 });
+const authMiddleware = require('./middleware/authMiddleware');
+const requireRole = require('./middleware/roleMiddleware');
 
+app.get('/test-admin', authMiddleware, requireRole(['ADMIN']), (req, res) => {
+  res.json({ message: 'You are an ADMIN', user: req.user });
+});
 app.use('/auth' ,authRoutes);
 app.use(errorhandeler);
 module.exports = app;
