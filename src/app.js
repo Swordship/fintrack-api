@@ -31,5 +31,7 @@ const userRoutes = require('./routes/userRoute');
 app.use('/users', userRoutes);
 const transactionRoutes = require('./routes/transactionRoute');
 app.use('/transactions', transactionRoutes);
+const dashboardRoutes = require('./routes/dashboardRoute');
+app.use('/dashboard', dashboardRoutes);
 app.use(errorhandeler);
 module.exports = app;
