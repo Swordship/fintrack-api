@@ -16,6 +16,7 @@ const authMiddleware = (req, res, next) => {
 
     // 3. Attach user info to the request object
     req.user = user;
+    req.role = user.role; // Assuming the token contains a 'role' field
     next(); // Move on to the next function (the controller)
   });
 };
