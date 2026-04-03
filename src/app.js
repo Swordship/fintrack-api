@@ -3,8 +3,15 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 require('dotenv').config();
-const authRoutes = require('./routes/authRoute.js');
-const { errorhandeler } = require('./middleware/errorHandler.js');
+const { PrismaClient } = require('@prisma/client');
+
+const authRoutes = require('./routes/authRoute');
+const userRoutes = require('./routes/userRoute');
+const transactionRoutes = require('./routes/transactionRoute');
+const dashboardRoutes = require('./routes/dashboardRoute');
+const { errorhandeler } = require('./middleware/errorHandler');
+
+const prisma = new PrismaClient();
 const app = express();
 
 app.use(helmet());
@@ -13,25 +20,29 @@ app.use(morgan('combined'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/health', (req, res) => {
+app.get('/health', async (req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
     res.status(200).json({
-        status: 'OK',
-        timestamp: new Date().toISOString(),
-        environment: process.env.NODE_ENV
+      status: 'OK',
+      database: 'connected',
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV,
     });
+  } catch (error) {
+    res.status(503).json({
+      status: 'ERROR',
+      database: 'disconnected',
+      timestamp: new Date().toISOString(),
+    });
+  }
 });
-const authMiddleware = require('./middleware/authMiddleware');
-const requireRole = require('./middleware/roleMiddleware');
 
-app.get('/test-admin', authMiddleware, requireRole(['ADMIN']), (req, res) => {
-  res.json({ message: 'You are an ADMIN', user: req.user });
-});
-app.use('/auth' ,authRoutes);
-const userRoutes = require('./routes/userRoute');
+app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
-const transactionRoutes = require('./routes/transactionRoute');
 app.use('/transactions', transactionRoutes);
-const dashboardRoutes = require('./routes/dashboardRoute');
 app.use('/dashboard', dashboardRoutes);
+
 app.use(errorhandeler);
+
 module.exports = app;
